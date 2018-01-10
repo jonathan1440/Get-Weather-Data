@@ -175,6 +175,7 @@ Here's how to set it up: (adapted from http://www.instructables.com/id/Use-ssh-t
 18. You'll need to run two processes at once. In order to do that, you have to use the `tmux` library.
 19. Type `sudo apt-get install tmux`
 20. You can start a new shell by typing `ctrl+b` and then `%`.
-21. Switch back to the first shell and type `./weatherstation.c 2| python readWeatherData.py` to start collecting data.
+21. Switch back to the first shell and type `./weatherstation 2| python readWeatherData.py` to start collecting data.
 22. Switch to the second shell and type `python forwardData.py` to forward the data.
-**I'm not sure if this will work as I haven't tried it yet. I will update as needed after I do in the near future**
+
+**Splitting the shell doesn't work. LAter I'm going to figure out how to split processes or combine the two into one.**
