@@ -1,0 +1,6 @@
+smtp.gmail.com
+sender@gmail.com
+password
+weather data
+weather data
+recipient@gmail.com
