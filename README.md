@@ -38,6 +38,7 @@ Both of the .c files are throughly commented by Dave Thompson to explain what's 
    - Although my RPi has 4 USB ports, I could have done it with 2:
      - One for the wireless USB keyboard and mouse
      - One to connect with the AcuRite sensor
+ 3. If you need to use an SSH connection, you can download WinSCP to transfer files from your windows machine to the RPi over an SSH connection: https://winscp.net/download/WinSCP-5.11.3-Setup.exe
  
  
 **Instructions:**
@@ -110,7 +111,8 @@ The AcuRite console gives off two different types of output. The `weatherstation
 5. All the output you see is a combination of the `stderr` and `stdout` output. To narrow it down you can type `./weatherstation 2`
 
 Now we use a python file to put the data into a file for storage.
-The file Dave provided was in `python 2.7.9`. I don't know `python 2` and wanted to edit the code anyways, so I changed it to `python 3.4.2`.
+The file Dave provided was in `python 2.7.9`. I don't know `python 2` and wanted to edit the code anyways, so I changed it to `python 3.4.2`. I also added daily weather updates with all the data from the previous 24 hours via email.
+
 The RPi is naturally set to run `python 2.7.9` even though it has multiple versions installed. 
 In order to run the `readWeatherData.py` file we first have to change the default python version to `3.4.2`:
 1. First make sure you know what your python version is: `python --version`
@@ -124,13 +126,15 @@ In order to run the `readWeatherData.py` file we first have to change the defaul
 6. If, at any time in the future, you want to change between python versions, type `update-alternatives --config python` and follow the instructions shown in terminal.
    - You can read more about changing python versions here: https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux
 7. Now go ahead and download `readWeatherData.py` into the same directory as the previous two files.
-8. Now, in that same directory, create a folder called `Data`. The file `readWeatherData.py` is coded to use it. You can go into the code and change it if you don't like it.
-9. To run the file, type `./weatherstation.c 2| python readWeatherData.py`.
+8. `readWeatherData.py` sends email updates based on the content of a file called `emailData.txt` in the same directory as `readWeatherData.py`.
+9. Download `emailData.txt` into the appropriate directory and edit its contents to be specific to you wants.
+10. Now, to store the data, go to that same directory and create a folder called `Data`. The file `readWeatherData.py` is coded to use it. You can go into the code and change it if you don't like it.
+11. To run the file, type `./weatherstation.c 2| python readWeatherData.py`.
    - This takes the `stdout` output of `weatherstaion.c` and pipes it as the input into `readWeatherData.py`.
    - `readWeatherData.py` takes that input and writes it into a file it creates in `./Data` named for the date.
 
    
-Great! Now you have the data being collected and stored in a directory where you can access. This is as far as I went in following Dave's blogs.
+Great! Now you have the data being collected and stored in a directory where you can access it. This is as far as I went in following Dave's blogs.
 The rest of his blogs on this topic are linked here:
 * http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi_13.html
 * http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi_16.html
@@ -140,13 +144,6 @@ The rest of his blogs on this topic are linked here:
 * http://www.desert-home.com/2015/02/reading-acurite-5n1-sensor-set-this.html
 * http://www.desert-home.com/2015/05/yet-another-update-to-acurite-5n1.html
 
-The next part is something I set up myself. I want to have the data somewhere where I can easily use it outside of my RPi.
-The `forwardData.py` file emails, at midnight, that day's data from a specified email to an array of specified emails. 
-At some point I am going to update it so that it deletes old files off of the RPi after it emails them, to conserve the limited space on it.
-1. Download the file `forwardData.py` into the same directory as the previous three files. 
-2. To run it, open a new tab in your terminal. 
-3. Navigate to the directory you set up and type `python forwardData.py`. 
-4. follow the instructions. 
 
 At some point I'll probably add another file that checks for emails that `forwardData.py` sends and turns them into CSV files.
 
@@ -172,10 +169,31 @@ Here's how to set it up: (adapted from http://www.instructables.com/id/Use-ssh-t
 16. A black screen will appear and, after a possible (short) wait, you'll be prompted to login. Login using the user credentials for you pi.
     - Remember that the default username is `Pi` and the default password is `raspberry`.
 17. If everything went correctly, you're in the terminal in your RPi!
-18. You'll need to run two processes at once. In order to do that, you have to use the `tmux` library.
-19. Type `sudo apt-get install tmux`
-20. You can start a new shell by typing `ctrl+b` and then `%`.
-21. Switch back to the first shell and type `./weatherstation 2| python readWeatherData.py` to start collecting data.
-22. Switch to the second shell and type `python forwardData.py` to forward the data.
 
-**Splitting the shell doesn't work. LAter I'm going to figure out how to split processes or combine the two into one.**
+
+Now we need to make the two scripts executable over SSH. It isn't practical to have it running in the SSH terminal, as it would prevent you from doing anything else. The solution I chose was to make it a service. Services can be set to run at certain points. I set it up to start every time the RPi turns on. 
+1. Download the check-weather.sh file into your directory. This file executes the `weatherstation.c` file and pipes its output into `readWeatherData.py` and runs it too.
+2. Now we need to make the service. Type in `cd /lib/systemd/system`.
+3. We're going to make a file called `check-weather.service` that controlls what (the `check-weather.sh` file) and when it is run. Type `sudo nano check-weather.service`.
+4. Type the following: 
+`[Unit]
+Description=Hello World
+After=multi-user.target
+ 
+[Service]
+Type=simple
+ExecStart=/usr/bin/python /home/pi/hello_world.py
+Restart=on-abort
+ 
+[Install]
+WantedBy=multi-user.target`
+5. Hit `ctrl+x`, `y`, and enter.
+6. Now execute the following commands to set the permissions, make the file executable, and start the service:
+`sudo chmod 644 /lib/systemd/system/check-weather.service
+chmod +x <filepath to your directory with the weather stuff in it>
+sudo systemctl daemon-reload
+sudo systemctl enable check-weather.service
+sudo systemctl start check-weather.service`
+
+Will finish in morning
+
