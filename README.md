@@ -4,20 +4,19 @@
 **vv Instructions below!! vv**
 
 Adapted from this amazing blog series by Dave Thompson: http://www.desert-home.com/2014/11/acurite-weather-station-raspberry-pi.html
-`usbexample1.c` and `weatherstation.c` were copied verbatum from that blog and `readWeatherData.py` was based on code from it.
-`forwardData.py` is completely my own creation.
+`usbexample1.c` and `weatherstation.c` were copied verbatum from that blog and `readWeatherData.py` is based on code from it. Everything else is my own creation.
 
 I didn't have the tools, equipment, desire, or knowledge to ditch the weather station console and go striaght to intercepting the RF signals, or else I would direct you to Dave's GitHub repo for this project. 
 I'll link it here anyways: https://github.com/draythomp/Desert-Home-WeatherStation
 
-I had to do quite a few things differntly from Dave when I set it up myself, and it wasn't always clear to a beginner like me what he meant, so I thought I'd put the exact process I follwed in one place.
-To be clear, at the time of writing I am a beginner. I'm sure there are better ways to do most of what's below, but hopefully this will help someone else who doesn't want to take the time to figure it out themself.
+I had to do quite a few things differntly from Dave when I set it up myself, and it wasn't always clear to a beginner like me what his instructions meant, so I thought I'd put the exact process I follwed in one place.
+To be clear, at the time of writing, I am still a beginner. I'm sure there are better ways to do most of what's below, but hopefully this will help someone else who doesn't want to take the time to figure it out themself.
 
 
 Both of the .py files are throughly commented by me to explain what's going on.
-Both of the .c files are throughly commented by Dave Thompson to explain what's going on.
+Both of the .c files are commented by Dave Thompson for the same purpose.
 
-==============
+**===========================================================**
 
 **A brief overivew of the files involved:**
 * `usbexample1.c` allows us to access the USB cord connection the RPi to the AcuRite console.
@@ -36,14 +35,14 @@ Both of the .c files are throughly commented by Dave Thompson to explain what's 
      - I bought it from adafruit, which is now selling microSDs with NOOBS v2.1: https://www.adafruit.com/product/1583 
    - I'm using an HDMI monitor and wireless USB mouse and keyboard to control the GUI on the RPi.
      - The mouse and keyboard are something like this: https://www.amazon.com/Logitech-MK270-Wireless-Keyboard-Mouse/dp/B00BP5KOPA
-     - It is possible to do this whole thing by SSHing into the pi, but I'm too visual. Although I run the scripts through SSH now that I've finished, I set it up using the GUI.
+     - It is possible to do this whole thing by SSHing into the pi, but I'm too visual to feel comfortable doing that. Although I run the scripts through SSH now that I've finished, I set it up using the GUI.
+     - If you need to use only an SSH connection, you can download WinSCP to transfer files from your windows machine to the RPi over an SSH connection: https://winscp.net/download/WinSCP-5.11.3-Setup.exe
    - Although my RPi has 4 USB ports, I could have done it with 2:
      - One for the wireless USB keyboard and mouse
      - One to connect with the AcuRite sensor
- 3. If you need to use an SSH connection, you can download WinSCP to transfer files from your windows machine to the RPi over an SSH connection: https://winscp.net/download/WinSCP-5.11.3-Setup.exe
  
  
-**Instructions:**
+####**Instructions:**
 The first step, obviously, is to plug everything in.
 The USB port on the AcuRite is under the panel you have to take off to replace the batteries. 
 Plug in the USB cord that comes with the AcuRite to both that port and a USB port on the RPi.
@@ -96,18 +95,18 @@ To change permissions so we can access the USB:
 **This next part corresponds with this post: http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi.html**
 Next we need to get the ability to connect to the AcuRite console through code:
 1. Go to this link and download it on your RPi: https://sourceforge.net/projects/libusb/files/latest/download?source=files
-2. Go in terminal to the directory where you put the download. Type `tar xvf filename` (replace filename with the name of the download)
+2. Go in terminal to the directory where you put the download. Type `tar xvf filename` (replace filename with the filename of the download)
 3. Before you can install the library you need to make sure your RPi is completely up to date.
    - Type `sudo apt-get update`
    - Type `sudo apt-get upgrade`
    - Type `y`
    - This will take a while. IIRC, it took me about an hour, but it will vary based on your CPU and download speed.
 4. You also need to get another library first. Type `sudo apt-get install libudev-dev`
-5. Now go to the directory where the original download is. Read the `INSTALL` file to get the instructions. They could easily change between when I write this and you read it, but, when I did them, they were:
+5. Now go to the directory where the original download is. Read the `INSTALL` file to get the instructions. They could easily change between when I write this and you read it, but, when I did it, they were:
    1. `sudo ./configure`
    2. `sudo make`
    3. `sudo make install`
-   - If it's different for you, make sure you put `sudo` before the commands. Otherwise it won't work.
+   - If it's different for you, make sure you're logged in as root or put `sudo` before the commands. Otherwise it won't work.
 6. Now download `usbexample1.c` from this repository and put it somewhere on your RPi. It doesn't matter, but I put mine in a folder on my desktop. Where ever you put it, remember it, because all the other files in this repository need to go to the same place.
 7. This particular file needs to be compiled to `/usr/local/lib`. To compile it, type `cc  usbexample1.c -L/usr/local/lib -lusb-1.0`.
 8. Compiling it should leave you with an `a.out` file. You need this; leave it there.
@@ -118,11 +117,11 @@ The AcuRite console gives off two different types of output. The `weatherstation
 1. Download the `weatherstation.c` file from this repository to the same directory you put `usbexample1.c` in. 
 2. Read the comments in `weatherstation.c` if you want. They kind of explain how to use it and what it does. This is optional; I'll tell you everything you need to know here (the bare minimum).
 3. `weatherstation.c` needs to be compiled too; type `cc -o weatherstation  weatherstation.c -L/usr/local/lib -lusb-1.0`
-4. When you run it, the `stdout` output will be the data from the console in a dictionary! To run it, type `./weatherstation`
+4. When you run it, the `stdout` output will be the data from the console in a dictionary. To run it, type `./weatherstation`
 5. All the output you see is a combination of the `stderr` and `stdout` output. To narrow it down you can type `./weatherstation 2`
 
 Now we use a python file to put the data into a file for storage.
-The file Dave provided was in `python 2.7.9`. I don't know `python 2` and wanted to edit the code anyways, so I changed it to `python 3.4.2`. I also added daily weather updates with all the data from the previous 24 hours via email.
+The file Dave provided was in `python 2.7.9`. I don't know `python 2` and wanted to edit the code, so I changed it to `python 3.4.2`. I also added daily weather updates with all the data from the previous 24 hours via email.
 
 The RPi is naturally set to run `python 2.7.9` even though it has multiple versions installed. 
 In order to run the `readWeatherData.py` file we first have to change the default python version to `3.4.2`:
@@ -137,15 +136,16 @@ In order to run the `readWeatherData.py` file we first have to change the defaul
 6. If, at any time in the future, you want to change between python versions, type `update-alternatives --config python` and follow the instructions shown in terminal.
    - You can read more about changing python versions here: https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux
 7. Now go ahead and download `readWeatherData.py` into the same directory as the previous two files.
-8. `readWeatherData.py` sends email updates based on the content of a file called `emailData.txt` in the same directory as `readWeatherData.py`.
-9. Download `emailData.txt` into the appropriate directory and edit its contents to be specific to you wants.
-10. Now, to store the data, go to that same directory and create a folder called `Data`. The file `readWeatherData.py` is coded to use it. You can go into the code and change it if you don't like it.
-11. To run the file, type `./weatherstation.c 2| python readWeatherData.py`.
-   - This takes the `stdout` output of `weatherstaion.c` and pipes it as the input into `readWeatherData.py`.
+8. You'll need to update lines 62 and 67 to match the filepath to the directory you're using for this project.
+9. `readWeatherData.py` sends email updates based on the content of a file called `emailData.txt` in the same directory as `readWeatherData.py`.
+10. Download `emailData.txt` into the appropriate directory and edit its contents to be specific to you wants.
+11. Now, to store the data, go to that same directory and create a folder called `Data`. The file `readWeatherData.py` is coded to use it. You can go into the code and change it in line 62 if you don't like the name.
+12. To run the file, type `./weatherstation.c 2| python readWeatherData.py`.
+   - This takes the `stdout` output of `weatherstaion.c` and pipes it into `readWeatherData.py` as the input.
    - `readWeatherData.py` takes that input and writes it into a file it creates in `./Data` named for the date.
 
    
-**Great! Now you have the data being collected and stored in a directory where you can access it. This is as far as I went in following Dave's blogs.
+**Great! Now you have the data being collected and stored in a directory where you can access it. This is as far as I went in following Dave's blogs.**
 The rest of his blogs on this topic are linked here:
 * http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi_13.html
 * http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi_16.html
@@ -153,14 +153,11 @@ The rest of his blogs on this topic are linked here:
 * http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi_29.html
 * http://www.desert-home.com/2015/01/acurite-weather-station-raspberry-pi.html
 * http://www.desert-home.com/2015/02/reading-acurite-5n1-sensor-set-this.html
-* http://www.desert-home.com/2015/05/yet-another-update-to-acurite-5n1.html**
-
-
-At some point I'll probably add another file that checks for emails that `forwardData.py` sends and turns them into CSV files.
+* http://www.desert-home.com/2015/05/yet-another-update-to-acurite-5n1.html
 
 
 It is unrealistic to have your monitor permantently connected to the RPi which has to be connected to the AcuRite weather station console to work.
-Therefore you'll probably want to run the files via SSH.
+Therefore, you'll probably want to run the files via SSH.
 Here's how to set it up: (adapted from http://www.instructables.com/id/Use-ssh-to-talk-with-your-Raspberry-Pi/)
 1. Before disconnecting your monitor, you need to enable SSH on your RPi.
 2. At some point, you'll probably be prompted to login. The default username is `Pi` and the default password is `raspberry`.
@@ -178,7 +175,7 @@ Here's how to set it up: (adapted from http://www.instructables.com/id/Use-ssh-t
 14. Click `open`.
 15. A window will pop open. I would choose "no" the first time so that you can make sure everything works as expected.
 16. A black screen will appear and, after a possible (short) wait, you'll be prompted to login. Login using the user credentials for you pi.
-    - Remember that the default username is `Pi` and the default password is `raspberry`.
+    - Remember that the default username is `pi` and the default password is `raspberry`.
 17. If everything went correctly, you're in the terminal in your RPi!
 
 
