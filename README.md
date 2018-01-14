@@ -42,7 +42,7 @@ Both of the .c files are commented by Dave Thompson for the same purpose.
      - One to connect with the AcuRite sensor
  
  
-####**Instructions:**
+**Instructions:**
 The first step, obviously, is to plug everything in.
 The USB port on the AcuRite is under the panel you have to take off to replace the batteries. 
 Plug in the USB cord that comes with the AcuRite to both that port and a USB port on the RPi.
