@@ -59,7 +59,7 @@ while True:
         #update current time, get in a string
         date = getDateStr(t.day,t.month,t.year)
         #set filepath name
-        filepath = '/home/pi/Desktop/AcuRite-Connection-Stuff/Data/'+data_date+'.txt'
+        filepath = '/home/pi/Desktop/AcuRite-Connection-Stuff/Data/'+data_date+'.csv'
 
         #if date data was created isn't the same as the current date,
         if data_date != date:
@@ -82,18 +82,20 @@ while True:
                 f = open(filepath, 'a')
             else:
                 f = open(filepath, 'w')
+                os.chown(filepath, 1000, -1)
+                f.write('date,time,wind speed,wind direction,temperature,humidity,rain counter')
                 f.close()
                 f = open(filepath, 'a')
-                os.chown(filepath, 1000, -1)
 
             #append data at the end
-            f.write('date:'+date+' '+str(t.hour)+':'+str(t.minute)+':'+str(t.second)+',wind speed:'+str(data['windSpeed']['WS'])+',wind direction'+str(data['windDirection']['WD'])+',temperature:'+str(data['temperature']['T'])+',humidity:'+str(data['humidity']['H'])+',rain counter:'+str(data['rainCounter']['RC']))
+            f.write(date+','+str(t.hour)+':'+str(t.minute)+':'+str(t.second)+','+str(data['windSpeed']['WS'])+','+str(data['windDirection']['WD'])+','+str(data['temperature']['T'])+','+str(data['humidity']['H'])+','+str(data['rainCounter']['RC']))
             #close the file
             f.close()
 
             #shut it down
             sys.stdout.flush()
             buff = ''
+            
     except KeyboardInterrupt:
         #shut it down
         sys.stdout.flush()
