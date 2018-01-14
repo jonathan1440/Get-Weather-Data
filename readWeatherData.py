@@ -64,7 +64,7 @@ while True:
         #if date data was created isn't the same as the current date,
         if data_date != date:
             #get data for email
-            emailData = open('emailData.txt').readlines()
+            emailData = open('/home/pi/Desktop/AcuRite-Connection-Stuff/emailData.txt').readlines()
 
             #send the email from the specified email with the specified subject, to the specified emails, with the data from the data file
             sendEmail(emailData[0],emailData[1],emailData[2],emailData[3],emailData[4],[filepath],emailData[3])
