@@ -20,8 +20,8 @@ Both of the .c files are throughly commented by Dave Thompson to explain what's 
 **A brief overivew of the files involved:**
 * `usbexample1.c` allows us to access the USB cord connection the RPi to the AcuRite console.
 * `weatherstation.c` accesses the AcuRite console and retrievs the data it collects from the weather station itself. It outputs that data every 15 seconds. You can change the timer interval in the top of the file.
-* `readWeatherData.py` collects the output from `weatherstation.c`, formats it how I wanted it, and writes it to a file (one file per day) for storage.
-* `forwardData.py` sends the contents of the file from a specified gmail account to a list of other emails at midnight each day.
+* `readWeatherData.py` collects the output from `weatherstation.c`, formats it how I wanted it, and writes it to a csv file (one file per day) for storage. Also, every midnight, it emails the previous day's file to a specified email address.
+* `emailData.txt` stores all the parameters needed for the above email to work. You'll need to update this yourself with info specific to your senario.
 
 **My equipment:**
 1. I have the AcuRite weather station model 01536. 
@@ -54,7 +54,7 @@ To see that we don't have permissions:
 3. Type `ls -l` to look at all of the permissions.
 4. This USB type is something like `hidraw2`. The number could be different.
 5. Note that we can't do much to it.
-To change that:
+To change permissions so we can access the USB:
 1. (Optionally) type `clear`
 2. Type `dmesg` 
 3. Look for something like this:
@@ -143,7 +143,7 @@ In order to run the `readWeatherData.py` file we first have to change the defaul
    - `readWeatherData.py` takes that input and writes it into a file it creates in `./Data` named for the date.
 
    
-Great! Now you have the data being collected and stored in a directory where you can access it. This is as far as I went in following Dave's blogs.
+**Great! Now you have the data being collected and stored in a directory where you can access it. This is as far as I went in following Dave's blogs.
 The rest of his blogs on this topic are linked here:
 * http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi_13.html
 * http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi_16.html
@@ -151,7 +151,7 @@ The rest of his blogs on this topic are linked here:
 * http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi_29.html
 * http://www.desert-home.com/2015/01/acurite-weather-station-raspberry-pi.html
 * http://www.desert-home.com/2015/02/reading-acurite-5n1-sensor-set-this.html
-* http://www.desert-home.com/2015/05/yet-another-update-to-acurite-5n1.html
+* http://www.desert-home.com/2015/05/yet-another-update-to-acurite-5n1.html**
 
 
 At some point I'll probably add another file that checks for emails that `forwardData.py` sends and turns them into CSV files.
