@@ -1,6 +1,8 @@
 # Get-Weather-Data
 **Hack into AcuRite from Raspberry Pi to constantly extract weather data**
 
+**vv Instructions below!! vv**
+
 Adapted from this amazing blog series by Dave Thompson: http://www.desert-home.com/2014/11/acurite-weather-station-raspberry-pi.html
 `usbexample1.c` and `weatherstation.c` were copied verbatum from that blog and `readWeatherData.py` was based on code from it.
 `forwardData.py` is completely my own creation.
