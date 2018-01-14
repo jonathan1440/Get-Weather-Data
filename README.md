@@ -194,6 +194,6 @@ chmod +x <filepath to your directory with the weather stuff in it>
 sudo systemctl daemon-reload
 sudo systemctl enable check-weather.service
 sudo systemctl start check-weather.service`
-
-Will finish in morning
+7. The script should now be running. If you want to check it for stderr (errors and logs), type `sudo systemctl status check-weather.service`.
+8. If you want to make sure its working right, you can go to the /Data folder and make sure the right file has been created and that it has the right content.
 
