@@ -82,12 +82,12 @@ while True:
             else:
                 f = open(filepath, 'w')
                 os.chown(filepath, 1000, -1)
-                f.write('date,time,wind speed,wind direction,temperature,humidity,rain counter')
+                f.write('date,time,wind speed,wind direction,temperature,humidity,rain counter\n')
                 f.close()
                 f = open(filepath, 'a')
 
             #append data at the end
-            f.write(date+','+str(t.hour)+':'+str(t.minute)+':'+str(t.second)+','+str(data['windSpeed']['WS'])+','+str(data['windDirection']['WD'])+','+str(data['temperature']['T'])+','+str(data['humidity']['H'])+','+str(data['rainCounter']['RC']))
+            f.write(date+','+str(t.hour)+':'+str(t.minute)+':'+str(t.second)+','+str(data['windSpeed']['WS'])+','+str(data['windDirection']['WD'])+','+str(data['temperature']['T'])+','+str(data['humidity']['H'])+','+str(data['rainCounter']['RC']+'\n'))
             #close the file
             f.close()
 
