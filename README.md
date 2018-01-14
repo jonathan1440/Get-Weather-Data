@@ -58,15 +58,24 @@ To change that:
 1. (Optionally) type `clear`
 2. Type `dmesg` 
 3. Look for something like this:
-   - `[    2.536425] usb 1-1.2: New USB device found, idVendor=24c0, idProduct=0003
-      [    2.538128] usb 1-1.2: New USB device strings: Mfr=0, Product=2, SerialNumber=0
-      [    2.541669] usb 1-1.2: Product: Chaney Instrument
-      [    3.127499] udevd[156]: starting version 175
-      [    5.553287] bcm2708-i2s bcm2708-i2s.0: Failed to create debugfs directory
-      [   12.559829] hid-generic 0003:24C0:0003.0001: usb_submit_urb(ctrl) failed: -1
-      [   12.561497] hid-generic 0003:24C0:0003.0001: timeout initializing reports
-      [   12.563452] input: Chaney Instrument as /devices/platform/bcm2708_usb/usb1/1-1/1-1.2/1-1.2:1.0/input/input0
-      [   12.569076] hid-generic 0003:24C0:0003.0001: input,hidraw0: USB HID v1.11 Device [Chaney Instrument] on usb-bcm2708_usb-1.2/input0`
+   - `[    2.536425] usb 1-1.2: New USB device found, idVendor=24c0, idProduct=0003`
+   
+      `[    2.538128] usb 1-1.2: New USB device strings: Mfr=0, Product=2, SerialNumber=0`
+      
+      `[    2.541669] usb 1-1.2: Product: Chaney Instrument`
+      
+      `[    3.127499] udevd[156]: starting version 175`
+      
+      `[    5.553287] bcm2708-i2s bcm2708-i2s.0: Failed to create debugfs directory`
+      
+      `[   12.559829] hid-generic 0003:24C0:0003.0001: usb_submit_urb(ctrl) failed: -1`
+      
+      `[   12.561497] hid-generic 0003:24C0:0003.0001: timeout initializing reports`
+      
+      `[   12.563452] input: Chaney Instrument as /devices/platform/bcm2708_usb/usb1/1-1/1-1.2/1-1.2:1.0/input/input0`
+      
+      `[   12.569076] hid-generic 0003:24C0:0003.0001: input,hidraw0: USB HID v1.11 Device [Chaney Instrument] on usb-bcm2708_usb-1.2/input0`
+      
    - It will probably be at the very end, since its the last thing you plugged into the USB ports.
 4. Find the line that says `New USB device found, idVendor=24c0, idProduct=0003` in your terminal. The values for idVendor and idProduct could be different.
    - Take note of what it defines `idVendor` and `idProduct` as. In this example, they are `24c0` and `0003` respectively.
@@ -176,24 +185,42 @@ Now we need to make the two scripts executable over SSH. It isn't practical to h
 2. Now we need to make the service. Type in `cd /lib/systemd/system`.
 3. We're going to make a file called `check-weather.service` that controlls what (the `check-weather.sh` file) and when it is run. Type `sudo nano check-weather.service`.
 4. Type the following: 
-`[Unit]
-Description=Hello World
-After=multi-user.target
- 
-[Service]
-Type=simple
-ExecStart=/usr/bin/python /home/pi/hello_world.py
-Restart=on-abort
- 
-[Install]
-WantedBy=multi-user.target`
+  `[Unit]`
+
+   `Description=Hello World`
+
+   `After=multi-user.target`
+
+   ``
+
+   `[Service]`
+
+   `Type=simple`
+
+   `ExecStart=/usr/bin/python /home/pi/hello_world.py`
+
+   `Restart=on-abort`
+
+   ``
+
+   `[Install]`
+
+   `WantedBy=multi-user.target`
+
+
 5. Hit `ctrl+x`, `y`, and enter.
 6. Now execute the following commands to set the permissions, make the file executable, and start the service:
-`sudo chmod 644 /lib/systemd/system/check-weather.service
-chmod +x <filepath to your directory with the weather stuff in it>
-sudo systemctl daemon-reload
-sudo systemctl enable check-weather.service
-sudo systemctl start check-weather.service`
+
+   `sudo chmod 644 /lib/systemd/system/check-weather.service`
+
+   `chmod +x <filepath to your directory with the weather stuff in it>`
+
+   `sudo systemctl daemon-reload`
+
+   `sudo systemctl enable check-weather.service`
+
+   `sudo systemctl start check-weather.service`
+
 7. The script should now be running. If you want to check it for stderr (errors and logs), type `sudo systemctl status check-weather.service`.
 8. If you want to make sure its working right, you can go to the /Data folder and make sure the right file has been created and that it has the right content.
 
