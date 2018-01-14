@@ -222,4 +222,5 @@ Now we need to make the two scripts executable over SSH. It isn't practical to h
 
 7. The script should now be running. If you want to check it for stderr (errors and logs), type `sudo systemctl status check-weather.service`.
 8. If you want to make sure its working right, you can go to the /Data folder and make sure the right file has been created and that it has the right content.
+9. If you want to read more about running a script as a service, check out http://www.diegoacuna.me/how-to-run-a-script-as-a-service-in-raspberry-pi-raspbian-jessie/
 
