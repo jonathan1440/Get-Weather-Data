@@ -26,7 +26,7 @@ def sendEmail(server,sendFromEmail,password,subject,messageToSend,files,emailToS
     #set up email content
     msg = MIMEMultipart()
     msg['From'] = sendFromEmail
-    sg['To'] = COMMASPACE.join(emailToSendTo)
+    msg['To'] = COMMASPACE.join(emailToSendTo)
     msg['Date'] = formatdate(localtime = True)
     msg['Subject'] = subject
 
