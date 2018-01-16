@@ -1,4 +1,5 @@
 smtp.gmail.com
+port (probably 587)
 sender@gmail.com
 password
 subject
