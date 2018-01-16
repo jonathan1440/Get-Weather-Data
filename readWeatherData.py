@@ -66,7 +66,7 @@ while True:
             emailData = open('/home/pi/Desktop/AcuRite-Connection-Stuff/emailData.txt').readlines()
 
             #send the email from the specified email with the specified subject, to the specified emails, with the data from the data file
-            sendEmail(emailData[0],emailData[1],emailData[2],emailData[3],emailData[4],[filepath],emailData[3])
+            sendEmail(emailData[0],emailData[1],emailData[2],emailData[3],emailData[4],emailData[5],[filepath],emailData[3])
 
             #update date for data file
             data_date = getDateStr(t.day,t.month,t.year)
