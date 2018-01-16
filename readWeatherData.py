@@ -13,7 +13,7 @@ def getDateStr(day,month,year):
 
 #server - 'smtp.gmail.com'
 #files - [filepath,filepath]
-def sendEmail(server,sendFromEmail,password,subject,messageToSend,files,emailToSendTo):
+def sendEmail(server,port,sendFromEmail,password,subject,messageToSend,files,emailToSendTo):
     #import a bunch of stuff
     import smtplib
     import os
@@ -30,7 +30,7 @@ def sendEmail(server,sendFromEmail,password,subject,messageToSend,files,emailToS
     msg['Date'] = formatdate(localtime = True)
     msg['Subject'] = subject
 
-    msg.attach(MIMEText(Text))
+    msg.attach(MIMEText(messageToSend))
 
     #attach attachments
     for path in files:
