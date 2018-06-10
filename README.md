@@ -22,7 +22,7 @@ Both of the .c files are commented by Dave Thompson for the same purpose.
 * `usbexample1.c` allows us to access the USB cord connection the RPi to the AcuRite console.
 * `weatherstation.c` accesses the AcuRite console and retrievs the data it collects from the weather station itself. It outputs that data every 15 seconds. You can change the timer interval in the top of the file.
 * `readWeatherData.py` collects the output from `weatherstation.c`, formats it how I wanted it, and writes it to a csv file (one file per day) for storage. Also, every midnight, it emails the previous day's file to a specified email address.
-* `emailData.txt` stores all the parameters needed for the above email to work. You'll need to update this yourself with info specific to your senario.
+* `collect-weather.sh` lets weathernstation.c and readWeatherData.py interact outside of the terminal and be run as a service.
 
 **My equipment:**
 1. I have the AcuRite weather station model 01536. 
