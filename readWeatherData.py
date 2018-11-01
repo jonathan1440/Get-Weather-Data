@@ -1,11 +1,10 @@
 #!/usr/bin/python
 import sys
 import json
-import time
 from datetime import datetime
 import os
 
-#original source: http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi_3.html
+#adapted from the original source at: http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi_3.html
 
 #returns date as a string in the format d-m-y
 def getDateStr(day,month,year):
@@ -16,23 +15,18 @@ t = datetime.now()
 #current date, the date the data file was created
 data_date = getDateStr(t.day,t.month,t.year)
 buff = ''
+
 while True:    
     try:
         #update current date and time
         t = datetime.now()
         #update current time, get in a string
         date = getDateStr(t.day,t.month,t.year)
-        #set filepath name
+        #set filepath to most current data file to be edited
         filepath = '/home/pi/Desktop/AcuRite-Connection-Stuff/Data/'+data_date+'.csv'
 
-        #if date data was created isn't the same as the current date,
+        #if the date that the data was created isn't the same as the current date,
         if data_date != date:
-            #get data for email
-            emailData = open('/home/pi/Desktop/AcuRite-Connection-Stuff/emailData.txt').readlines()
-
-            #send the email from the specified email with the specified subject, to the specified emails, with the data from the data file
-            sendEmail(emailData[0],emailData[1],emailData[2],emailData[3],emailData[4],emailData[5],[filepath],emailData[3])
-
             #update date for data file
             data_date = getDateStr(t.day,t.month,t.year)
         
@@ -41,14 +35,16 @@ while True:
             #get the new data
             data = json.loads(buff[:-1])
 
-            #open file for the day
+            #if it already exists, open the file for the day
             if os.path.exists(filepath):
                 f = open(filepath, 'a')
             else:
+                #if it doesn't already exist, make a new one
                 f = open(filepath, 'w')
                 os.chown(filepath, 1000, -1)
                 f.write('date,time,wind speed,wind direction,temperature,humidity,rain counter\n')
                 f.close()
+                
                 f = open(filepath, 'a')
 
             #append data at the end
