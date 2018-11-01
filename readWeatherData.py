@@ -11,41 +11,6 @@ import os
 def getDateStr(day,month,year):
     return str(day)+'-'+str(month)+'-'+str(year)
 
-#server - 'smtp.gmail.com'
-#files - [filepath,filepath]
-def sendEmail(server,port,sendFromEmail,password,subject,messageToSend,files,emailToSendTo):
-    #import a bunch of stuff
-    import smtplib
-    import os
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.base import MIMEBase
-    from email.mime.text import MIMEText
-    from email.utils import COMMASPACE, formatdate
-    from email import encoders
-
-    #set up email content
-    msg = MIMEMultipart()
-    msg['From'] = sendFromEmail
-    msg['To'] = COMMASPACE.join(emailToSendTo)
-    msg['Date'] = formatdate(localtime = True)
-    msg['Subject'] = subject
-
-    msg.attach(MIMEText(messageToSend))
-
-    #attach attachments
-    for path in files:
-        part = MIMEBase('application', "octet-stream")
-        with open(path, 'rb') as file:
-            part.set_payload(file.read())
-        encoders.encode_base64(part)
-        part.add_header('Content-Disposition','attachment; filename="{0}"'.format(os.path.basename(f)))
-
-    #send email
-    send = smtplib.SMTP(server, port)
-    if isTLS: send.starttls()
-    send.login(sendFromEmail,password)
-    send.sendmail(sendFromEmail,emailToSendTo,msg.as_String())
-
 #current date and time
 t = datetime.now()
 #current date, the date the data file was created
