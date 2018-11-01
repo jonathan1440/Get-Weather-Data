@@ -9,20 +9,20 @@ Adapted from this amazing blog series by Dave Thompson: http://www.desert-home.c
 I didn't have the tools, equipment, desire, or knowledge to ditch the weather station console and go striaght to intercepting the RF signals, or else I would direct you to Dave's GitHub repo for this project. 
 I'll link it here anyways: https://github.com/draythomp/Desert-Home-WeatherStation
 
-I had to do quite a few things differntly from Dave when I set it up myself, and it wasn't always clear to a beginner like me what his instructions meant, so I thought I'd put the exact process I follwed in one place.
+I had to do quite a few things differntly from Dave when I set it up myself, and it wasn't always clear to a beginner like me what his instructions meant, so I thought I'd put the exact process I followed in one place.
 To be clear, at the time of writing, I am still a beginner. I'm sure there are better ways to do most of what's below, but hopefully this will help someone else who doesn't want to take the time to figure it out themself.
 
 
-Both of the .py files are throughly commented by me to explain what's going on.
-Both of the .c files are commented by Dave Thompson for the same purpose.
+The `.py` files are throughly commented by me to explain what's going on.
+Both of the `.c` files are commented by Dave Thompson for the same purpose.
 
 **===========================================================**
 
 **A brief overivew of the files involved:**
 * `usbexample1.c` allows us to access the USB cord connection the RPi to the AcuRite console.
 * `weatherstation.c` accesses the AcuRite console and retrievs the data it collects from the weather station itself. It outputs that data every 15 seconds. You can change the timer interval in the top of the file.
-* `readWeatherData.py` collects the output from `weatherstation.c`, formats it how I wanted it, and writes it to a csv file (one file per day) for storage. Also, every midnight, it emails the previous day's file to a specified email address.
-* `collect-weather.sh` lets weathernstation.c and readWeatherData.py interact outside of the terminal and be run as a service.
+* `readWeatherData.py` collects the output from `weatherstation.c`, formats it how I wanted it, and writes it to a `.csv` file for storage. It creates a new `.csv` file every day at midnight to store the next 24 hour's data.
+* `collect-weather.sh` lets `weathernstation.c` and `readWeatherData.py` interact outside of the terminal and be run as a service.
 
 **My equipment:**
 1. I have the AcuRite weather station model 01536. 
@@ -49,7 +49,7 @@ Plug in the USB cord that comes with the AcuRite to both that port and a USB por
 
 **The below section corresponds to Dave's first related post: http://www.desert-home.com/2014/11/acurite-weather-station-raspberry-pi.html**
 We don't have permissions to access the USB cord. 
-To see that we don't have permissions:
+To verify that we don't have permissions:
 1. Open terminal in the RPi
 2. Type `cd /dev` to go to the directory storing all the USB types. Hit enter (hit enter after each command you enter in terminal).
 3. Type `ls -l` to look at all of the permissions.
@@ -78,8 +78,8 @@ To change permissions so we can access the USB:
       `[   12.569076] hid-generic 0003:24C0:0003.0001: input,hidraw0: USB HID v1.11 Device [Chaney Instrument] on usb-bcm2708_usb-1.2/input0`
       
    - It will probably be at the very end, since its the last thing you plugged into the USB ports.
-4. Find the line that says `New USB device found, idVendor=24c0, idProduct=0003` in your terminal. The values for idVendor and idProduct could be different.
-   - Take note of what it defines `idVendor` and `idProduct` as. In this example, they are `24c0` and `0003` respectively.
+4. Find the line that says `New USB device found, idVendor=24c0, idProduct=0003` in your terminal. The values for `idVendor` and `idProduct` could be different than the values I have.
+   - Take note of what it defines `idVendor` and `idProduct` as. In my example, they are `24c0` and `0003` respectively.
 5. To make the USB readable by anything other than root, go to the directory `/etc/udev/rules.d`.
    - Type `cd /etc/udev/rules.d`
 6. Create a file named `10-local.rules`
@@ -102,7 +102,7 @@ Next we need to get the ability to connect to the AcuRite console through code:
    - Type `y`
    - This will take a while. IIRC, it took me about an hour, but it will vary based on your CPU and download speed.
 4. You also need to get another library first. Type `sudo apt-get install libudev-dev`
-5. Now go to the directory where the original download is. Read the `INSTALL` file to get the instructions. They could easily change between when I write this and you read it, but, when I did it, they were:
+5. Now go to the directory where the original download is. Read the `INSTALL` file to get the instructions. They could have changed between when I wrote this and you read it, but they were:
    1. `sudo ./configure`
    2. `sudo make`
    3. `sudo make install`
@@ -115,13 +115,14 @@ Next we need to get the ability to connect to the AcuRite console through code:
 **This next part corresponds to this post: http://www.desert-home.com/2014/12/acurite-weather-station-raspberry-pi_3.html**
 The AcuRite console gives off two different types of output. The `weatherstation.c` file reads them. Here's how to set it up:
 1. Download the `weatherstation.c` file from this repository to the same directory you put `usbexample1.c` in. 
-2. Read the comments in `weatherstation.c` if you want. They kind of explain how to use it and what it does. This is optional; I'll tell you everything you need to know here (the bare minimum).
+2. Read the comments in `weatherstation.c` if you want. They kind of explain how to use it and what it does. This is optional; I'll tell you everything (the bare minimum) that you need to make it work.
 3. `weatherstation.c` needs to be compiled too; type `cc -o weatherstation  weatherstation.c -L/usr/local/lib -lusb-1.0`
 4. When you run it, the `stdout` output will be the data from the console in a dictionary. To run it, type `./weatherstation`
 5. All the output you see is a combination of the `stderr` and `stdout` output. To narrow it down you can type `./weatherstation 2`
 
 Now we use a python file to put the data into a file for storage.
-The file Dave provided was in `python 2.7.9`. I don't know `python 2` and wanted to edit the code, so I changed it to `python 3.4.2`. I also added daily weather updates with all the data from the previous 24 hours via email.
+The file Dave provided was in `python 2.7.9`. I don't know `python 2` and wanted to edit the code, so I changed it to `python 3.4.2`.
+I originally wanted it to send the previous 24 hour's data file to a specified email every time it created a new one, so that I wouldn't have to worry about the RPi eventually running out of space to store the data. But I couldn't get it to work, so I moved on to more important things.
 
 The RPi is naturally set to run `python 2.7.9` even though it has multiple versions installed. 
 In order to run the `readWeatherData.py` file we first have to change the default python version to `3.4.2`:
@@ -135,11 +136,9 @@ In order to run the `readWeatherData.py` file we first have to change the defaul
 5. You should now be set to `3.4.2` for your default. 
 6. If, at any time in the future, you want to change between python versions, type `update-alternatives --config python` and follow the instructions shown in terminal.
    - You can read more about changing python versions here: https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux
-7. Now go ahead and download `readWeatherData.py` into the same directory as the previous two files.
-8. You'll need to update lines 62 and 67 to match the filepath to the directory you're using for this project.
-9. `readWeatherData.py` sends email updates based on the content of a file called `emailData.txt` in the same directory as `readWeatherData.py`.
+7. Now go ahead and download `readWeatherData.py` into the same directory as the previous two `.c` files.
 10. Download `emailData.txt` into the appropriate directory and edit its contents to be specific to you wants.
-11. Now, to store the data, go to that same directory and create a folder called `Data`. The file `readWeatherData.py` is coded to use it. You can go into the code and change it in line 62 if you don't like the name.
+11. Now, to store the data, go to that same directory and create a folder called `Data`. The file `readWeatherData.py` is hardcoded to use it. You can go into the file and change it in line 26 if you don't like the name. Regardless, you'll need to update line 26 to match the filepath to the directory you're using for this project.
 12. To run the file, type `./weatherstation.c 2| python readWeatherData.py`.
    - This takes the `stdout` output of `weatherstaion.c` and pipes it into `readWeatherData.py` as the input.
    - `readWeatherData.py` takes that input and writes it into a file it creates in `./Data` named for the date.
@@ -157,7 +156,7 @@ The rest of his blogs on this topic are linked here:
 
 
 It is unrealistic to have your monitor permantently connected to the RPi which has to be connected to the AcuRite weather station console to work.
-Therefore, you'll probably want to run the files via SSH.
+Therefore, you'll probably want to be able to run the files via SSH.
 Here's how to set it up: (adapted from http://www.instructables.com/id/Use-ssh-to-talk-with-your-Raspberry-Pi/)
 1. Before disconnecting your monitor, you need to enable SSH on your RPi.
 2. At some point, you'll probably be prompted to login. The default username is `Pi` and the default password is `raspberry`.
@@ -166,21 +165,21 @@ Here's how to set it up: (adapted from http://www.instructables.com/id/Use-ssh-t
 5. Hit the right arrow key twice to navigate to `Finish`
 6. Now you need to reboot to save the changes. After making sure all your files are saved, type `reboot`.
 7. After it restarts, open terminal and type `ifconfig` to find the IP address.
-8. You're looking for `inet addr: ###.###.###.###`, probably under the `wlan0` heading. Write it down.
+8. You're looking for `inet addr: ###.###.###.###`, probably under the `wlan0` heading. Write down the value of `inet addr`.
 9. Now you need to install PuTTY on the computer you're going to SSH from. 
-10. Download it from here: `http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html`
-11. Install it by running the .exe
+10. You can download it from here: `http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html`
+11. Install it by running the `.exe`
 12. Run PuTTY.
 13. In the field marked `Host Name (or IP address)` enter the `inet addr` you wrote down earlier.
 14. Click `open`.
 15. A window will pop open. I would choose "no" the first time so that you can make sure everything works as expected.
 16. A black screen will appear and, after a possible (short) wait, you'll be prompted to login. Login using the user credentials for you pi.
     - Remember that the default username is `pi` and the default password is `raspberry`.
-17. If everything went correctly, you're in the terminal in your RPi!
+17. If everything went correctly, you've now got acces to the terminal running on your RPi!
 
 
-Now we need to make the two scripts executable over SSH. It isn't practical to have it running in the SSH terminal, as it would prevent you from doing anything else. The solution I chose was to make it a service. Services can be set to run at certain points. I set it up to start every time the RPi turns on. 
-1. Download the check-weather.sh file into your directory. This file executes the `weatherstation.c` file and pipes its output into `readWeatherData.py` and runs it too.
+Now we need to make the two scripts executable over SSH. It isn't practical to have it running in the SSH terminal, as it would prevent you from doing anything else. The solution I chose was to make it a service. Services can be set to run at certain points. I set mine up to start every time the RPi turns on. 
+1. Download the `check-weather.sh` file into your directory. This file executes the `weatherstation.c` file and pipes its output into `readWeatherData.py` and runs it too.
 2. Now we need to make the service. Type in `cd /lib/systemd/system`.
 3. We're going to make a file called `check-weather.service` that controlls what (the `check-weather.sh` file) and when it is run. Type `sudo nano check-weather.service`.
 4. Type the following: 
@@ -221,6 +220,6 @@ Now we need to make the two scripts executable over SSH. It isn't practical to h
    `sudo systemctl start check-weather.service`
 
 7. The script should now be running. If you want to check it for stderr (errors and logs), type `sudo systemctl status check-weather.service`.
-8. If you want to make sure its working right, you can go to the /Data folder and make sure the right file has been created and that it has the right content.
+8. If you want to make sure its working right, you can go to the `/Data` folder and make sure the right file has been created and that it has the right content.
 9. If you want to read more about running a script as a service, check out http://www.diegoacuna.me/how-to-run-a-script-as-a-service-in-raspberry-pi-raspbian-jessie/
 
